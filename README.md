@@ -6,6 +6,7 @@ Double click on the index.html file, to be deliver with great feed content
 
 ### additional tests for the current functionality:
 Checks if the options in the menu are the same number as the urls defined in the app.js
+(does this test make sense?)
 
 
 ### test driven development
@@ -19,4 +20,4 @@ The *Get More Articles* test suite, checks if there are more articles after the 
 
 
 ## questions
-Will the click trigger in the *Get More Articles*, once the get more articles link works,  actually get more articles upon load, and how can I prevent it from doing so?
+Will the click trigger in the *Get More Articles*, once the get more articles link works,  actually get more articles upon load, and how can I prevent it from doing so? Is using loadFeed(0) in the afterEach going to solve it?

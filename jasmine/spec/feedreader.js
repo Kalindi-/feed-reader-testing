@@ -1,21 +1,21 @@
-/* feedreader.js
+/** feedreader.js
  *
  * This is the spec file that Jasmine will read and contains
  * all of the tests that will be run against your application.
  */
 
-/* We're placing all of our tests within the $() function,
+/** We're placing all of our tests within the $() function,
  * since some of these tests may require DOM elements. We want
  * to ensure they don't run until the DOM is ready.
  */
 $(function() {
-    /* This is the first test suite - a test suite just contains
-    * a related set of tests. This suite is all about the RSS
-    * feeds definitions, the allFeeds variable in our application.
-    */
-    describe('RSS Feeds', function() {
 
-        /* This is the first test - it tests to make sure that the
+    /** This is the first test suite - a test suite just contains
+     * a related set of tests. This suite is all about the RSS
+     * feeds definitions, the allFeeds variable in our application.
+     */
+    describe('RSS Feeds', function() {
+        /** This is the first test - it tests to make sure that the
          * allFeeds variable has been defined and that it is not empty.
          */
         it('rss feeds are defined', function() {
@@ -23,33 +23,34 @@ $(function() {
             expect(allFeeds.length).not.toBe(0);
         });
 
-        /* Test loops through each feed in the allFeeds object
+        /** Test loops through each feed in the allFeeds object
          * ensures it has a URL defined
          * ensures that the URL is not empty.
          */
         it('urls of feeds defined and not empty', function() {
             allFeeds.forEach(function(entry) {
                 expect(entry.url).toBeDefined();
-                expect(entry.url).not.toBe(0);
+                expect(entry.url.length).not.toBe(0);
             });
         });
 
-        /* Test loops through each feed in the allFeeds object
+        /** Test loops through each feed in the allFeeds object
          * ensures it has a name defined
          * ensures that the name is not empty.
          */
         it('names of feeds defined and not empty', function() {
             allFeeds.forEach(function(entry) {
                 expect(entry.name).toBeDefined();
-                expect(entry.name).not.toBe(0);
+                expect(entry.name.length).not.toBe(0);
             });
         });
     });
 
-    /* This is our second test suite. This suite is about the menu.
+
+    /** This is our second test suite. This suite is about the menu.
      * It ensures the menu is hidden by default
      * and that it toggles like it should.
-    */
+     */
     describe('The menu toggles', function() {
 
         // This test ensures the menu element is hidden by default.
@@ -57,12 +58,11 @@ $(function() {
             expect(document.body.className).toBe('menu-hidden');
         });
 
-        /* Ensures the menu changes visibilit when the menu icon is clicked.
+        /** Ensures the menu changes visibilit when the menu icon is clicked.
          * It shows when clicked once
          * it hides when clicked again
          */
         it('should toggle menu visibility when clicked', function() {
-
             // select the clickable menu icon
             var menu = $('.menu-icon-link');
             // click menu icon for the first time
@@ -71,53 +71,68 @@ $(function() {
             // click second time
             menu.trigger('click');
             expect(document.body.className).toBe('menu-hidden');
+            // reviewer proposed hasClass, but i did not really manage
+            // i think because it was not a query object. How to do this?
         });
     });
 
-    /* Third test suite. This suite is about the initial entries.
+
+    /** Third test suite. This suite is about the initial entries.
      * It ensures that when the loadFeed function is called and
      * completes its work, there is at least a single entry
      */
      describe('Initial Entries', function() {
 
-        // Tests that at least one .entry is within the document.
+        /** Tests that at least one .entry is within the document.
+         */
         beforeEach(function(done) {
-            loadFeed(0, done); // i dont understand what is happening here?
+            loadFeed(0, done); // understand a bit, more tips welcome
         });
 
-        it("there is at least a single entry after loadFeed", function(done) {
+        it("there is at least a single entry after loadFeed", function() {
             var feeds = document.getElementsByClassName('entry').length;
             expect(feeds).toBeGreaterThan(0);
-            done();
         });
     });
 
-    /* Fourth test suite. This suite is about the new feed selection.
+    /** Fourth test suite. This suite is about the new feed selection.
      * It ensures that when a new feed is loaded by the loadFeed function
      * that the content actually changes.
      */
     describe('New Feed Selection', function() {
 
+        var feedsLoad0, feedsLoad1;
+
         beforeEach(function(done) {
-            loadFeed(0, done); // still don't understand what is happening here
+            feedsLoad0 = document.getElementsByClassName('feed')[0].innerHTML;
+            loadFeed(1, function() {
+                feedsLoad1 = document.getElementsByClassName('feed')[0].innerHTML;
+                done();
+            });
         });
 
-        // checks if content is different between two different feeds
-        it("content changes at each next load feed", function(done) {
-            var feeds = document.getElementsByClassName('entry');
-            expect(feeds[0]).not.toBe(feeds[1]);
-            done();
+        afterEach(function() {
+            loadFeed(0)
+        });
+
+        /** checks if content is different between two different feeds
+         */
+        it("content changes at each next load feed", function() {
+            expect(feedsLoad0).toBeDefined();
+            expect(feedsLoad1).toBeDefined();
+            expect(feedsLoad0).not.toBe(feedsLoad1);
         });
     });
 
-    /* Fourth test suite. An additional test suite to check for functions
+
+    /** Fifth test suite. An additional test suite to check for functions
      * that are already implemented.
      * It ensures that when the number of menu options is the same as the urls
      * defined in app.js.
      */
     describe('The menu options and the app defined urls', function() {
 
-        /* This test ensures the number of urls is the same as number of the
+        /** This test ensures the number of urls is the same as number of the
          * menu options.
          */
         it('amount of urls in app equals those in menu', function() {
@@ -125,22 +140,27 @@ $(function() {
             var menuOptions = ( $('.feed-list li').length);
             expect(allFeeds.length).toBe(menuOptions);
         });
-
-
     });
 
 
-    /* Sixth test suite: Test Driven Development.
+    /** Sixth test suite: Test Driven Development.
      * There should be a link, to allow more articles to be loaded. Test
      * checks if clicking the button "GET MORE ARTICLES" gives more articles
      */
 
     describe('Get More Articles', function() {
+
+    	// load feed before 'it'
         beforeEach(function(done) {
             loadFeed(0, done); // still don't understand what is happening here
         });
 
-        /* checks if there are more entries after having clicked the more
+        // return to the initial feed after 'it'
+        afterEach(function() {
+            loadFeed(0)
+        });
+
+        /** checks if there are more entries after having clicked the more
          * articles link
          */
         it('should add content if "More Articles" is clicked', function() {
@@ -155,7 +175,4 @@ $(function() {
             expect(feedsBefore).toBeLessThan(feedsAfter);
          });
     });
-
-
-
 }());
